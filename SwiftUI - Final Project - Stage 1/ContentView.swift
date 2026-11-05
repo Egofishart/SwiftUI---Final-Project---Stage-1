@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var expenses: [Expense] = Expense.dummyData
-    
+    @State private var isShowingAddView: Bool = false
     // ხარჯების ჯამის გამოთვლა
     private var totalAmount: Double {
         expenses.reduce(0) { $0 + $1.amount }
@@ -17,15 +17,28 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 2) {
+                HStack{
+                    Text("ჩემი ბიუჯეტი")
+                        .font(.title)
+                        .bold()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                        .padding(.vertical, 5)
+                    
+                    Spacer()
+                    
+                    Button {
+                        isShowingAddView = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                    }
+                }
+                             
+                .padding(.horizontal)
+                .padding(.vertical, 5)
                 
-                Text("ჩემი ბიუჯეტი")
-                    .font(.title) // საშუალო-პატარა ზომა
-                    .bold()
-                    .frame(maxWidth: .infinity, alignment: .leading) // გაჭიმავს და გასწორდება მარცხნივ
-                    .padding(.horizontal)
-                    .padding(.vertical, 5)
-                
-                // 2. სია / ცარიელი მდგომარეობა
+                // 2. სია
                 if expenses.isEmpty {
                     ContentUnavailableView(
                         "ხარჯები არ არის",
@@ -35,7 +48,7 @@ struct ContentView: View {
                     .frame(maxHeight: .infinity)
                 } else {
                     List {
-                        // 📜 2a. ჯამის ბარათი გადავიდა სიაში (ისქროლება ხარჯებთან ერთად)
+                        
                         Section {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("ამ თვის ხარჯი")
@@ -50,7 +63,7 @@ struct ContentView: View {
                         }
                         .listRowBackground(Color.blue) // ბარათის ლურჯი ფონი
                         
-                        // 📜 2b. ხარჯების ჩამონათვალი
+                        
                         Section(header: Text("ხარჯები")) {
                             VStack(spacing: 15) {
                                 ForEach(expenses) { expense in
@@ -87,6 +100,13 @@ struct ContentView: View {
                     }
                     .listStyle(.insetGrouped)
                     .scrollContentBackground(.hidden)
+                    
+                    
+                }
+            }
+            .sheet(isPresented: $isShowingAddView){
+                AddExpenseView{ expenses.append($0)
+                    
                 }
             }
         }
